@@ -1,10 +1,16 @@
-import { Ledger, LedgerSigner, requestDevice } from '../ledger'
+import { canAccessBle, Ledger, LedgerSigner, requestDevice } from '../ledger'
 import OasisApp from '@oasisprotocol/ledger'
 import { WalletError, WalletErrors } from 'types/errors'
 import { Wallet, WalletType } from 'app/state/wallet/types'
 import { isSupported, requestLedgerDevice } from '@ledgerhq/hw-transport-webusb/lib-es/webusb'
+import BleTransport from '@oasisprotocol/ionic-ledger-hw-transport-ble/lib'
 
 jest.mock('@ledgerhq/hw-transport-webusb/lib-es/webusb')
+jest.mock('@oasisprotocol/ionic-ledger-hw-transport-ble/lib', () => {
+  return {
+    isEnabled: jest.fn(),
+  }
+})
 
 jest.mock('@oasisprotocol/ledger', () => ({
   ...(jest.createMockFromModule('@oasisprotocol/ledger') as any),
@@ -29,6 +35,30 @@ describe('Extension access', () => {
 describe('Ledger Library', () => {
   afterEach(() => {
     jest.resetAllMocks()
+  })
+
+  describe('BLE Ledger', () => {
+    it('should support Bluetooth', async () => {
+      ;(BleTransport.isEnabled as jest.Mock).mockResolvedValue(true)
+      Object.defineProperty(window.navigator, 'bluetooth', {
+        writable: true,
+        value: {
+          requestLEScan: jest.fn(),
+        },
+      })
+
+      const canAccessBluetooth = await canAccessBle()
+      expect(canAccessBluetooth).toBe(true)
+    })
+
+    it('should not throw if platform does not support Bluetooth', async () => {
+      ;(BleTransport.isEnabled as jest.Mock).mockRejectedValue(
+        new Error('Platform does not support Bluetooth'),
+      )
+
+      const canAccessBluetooth = await canAccessBle()
+      expect(canAccessBluetooth).toBe(false)
+    })
   })
 
   describe('Ledger', () => {
@@ -120,14 +150,14 @@ describe('Ledger Library', () => {
 
     it('Should fail if the wallet does not have a path', () => {
       const openWallet = () => {
-        new LedgerSigner({ type: WalletType.Ledger } as Wallet)
+        new LedgerSigner({ type: WalletType.UsbLedger } as Wallet)
       }
       expect(openWallet).toThrow(/ not a ledger wallet/)
     })
 
     it('Should fail without USB transport', async () => {
       const signer = new LedgerSigner({
-        type: WalletType.Ledger,
+        type: WalletType.UsbLedger,
         path: [44, 474, 0, 0, 0],
         pathDisplay: `m/44'/474'/0'/0'/0'`,
         publicKey: '00',
@@ -140,7 +170,7 @@ describe('Ledger Library', () => {
 
     it('Should return the public key', () => {
       const signer = new LedgerSigner({
-        type: WalletType.Ledger,
+        type: WalletType.UsbLedger,
         path: [44, 474, 0, 0, 0],
         pathDisplay: `m/44'/474'/0'/0'/0'`,
         publicKey: 'aabbcc',
@@ -160,7 +190,7 @@ describe('Ledger Library', () => {
       sign.mockResolvedValueOnce({ return_code: 0x6986, error_message: '' })
 
       const signer = new LedgerSigner({
-        type: WalletType.Ledger,
+        type: WalletType.UsbLedger,
         path: [44, 474, 0, 0, 0],
         pathDisplay: `m/44'/474'/0'/0'/0'`,
         publicKey: '00',
@@ -187,7 +217,7 @@ describe('Ledger Library', () => {
       })
 
       const signer = new LedgerSigner({
-        type: WalletType.Ledger,
+        type: WalletType.UsbLedger,
         path: [44, 474, 0, 0, 0],
         pathDisplay: `m/44'/474'/0'/0'/0'`,
         publicKey: '00',

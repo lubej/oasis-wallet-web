@@ -142,6 +142,7 @@
   "errors": {
     "LedgerDerivedDifferentAccount": "This account does not belong to the currently connected Ledger.",
     "LedgerOasisAppIsNotOpen": "Oasis App on Ledger is closed.",
+    "bluetoothTransportNotSupported": "Your device does not support Bluetooth.",
     "cannotSendToSelf": "Cannot send to yourself",
     "disconnectedError": "Lost connection.",
     "duplicateTransaction": "Duplicate transaction",
@@ -215,7 +216,9 @@
     },
     "instructionSteps": {
       "closeLedgerLive": "Close Ledger Live app on the computer",
-      "connectLedger": "Connect your Ledger device to the computer",
+      "connectBluetoothLedger": "Connect your Bluetooth Ledger device to the device",
+      "connectUsbLedger": "Connect your USB Ledger device to the computer",
+      "deviceIsPaired": "Make sure your Ledger is paired with the device",
       "header": "Steps:",
       "openOasisApp": "Open the Oasis App on your Ledger device"
     },
@@ -242,15 +245,21 @@
     },
     "header": "How do you want to open your wallet?",
     "importAccounts": {
+      "NoBLEDevicesFound": "No Bluetooth devices found",
       "accountCounter": "{{count}} accounts selected",
       "accountCounter_one": "One account selected",
       "accountCounter_plural": "{{count}} accounts selected",
       "accountCounter_zero": "No account selected",
+      "bluetoothLedger": "Bluetooth Ledger",
+      "connectDeviceHeader": "How do you want to connect your Ledger device?",
       "next": "Next",
       "openWallets": "Open",
       "pageNumber": "Page {{pageNum}} of {{totalPages}}",
       "prev": "Prev",
-      "selectWallets": "Select accounts to open"
+      "selectDevice": "Select device",
+      "selectLedgerDevice": "Select Ledger device",
+      "selectWallets": "Select accounts to open",
+      "usbLedger": "USB Ledger"
     },
     "ledger": {
       "header": "Open from Ledger device"
@@ -447,9 +456,10 @@
     "wallets": {
       "select": "Select",
       "type": {
-        "ledger": "Ledger",
+        "bluetoothLedger": "BLE Ledger",
         "mnemonic": "Mnemonic",
-        "privateKey": "Private key"
+        "privateKey": "Private key",
+        "usbLedger": "USB Ledger"
       }
     }
   },

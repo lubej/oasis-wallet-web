@@ -14,6 +14,7 @@ import { WalletErrors } from 'types/errors'
 import { importAccountsActions } from 'app/state/importaccounts'
 import { requestDevice } from 'app/lib/ledger'
 import logotype from '../../../../public/logo192.png'
+import { WalletType } from '../../state/wallet/types'
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'error'
 type ConnectionStatusIconPros = {
@@ -53,7 +54,7 @@ export function ConnectDevicePage() {
       const device = await requestDevice()
       if (device) {
         setConnection('connected')
-        dispatch(importAccountsActions.enumerateAccountsFromLedger())
+        dispatch(importAccountsActions.enumerateAccountsFromLedger(WalletType.UsbLedger))
       }
     } catch {
       setConnection('error')
@@ -82,7 +83,10 @@ export function ConnectDevicePage() {
         <Box gap="medium">
           <ol>
             <li>
-              {t('ledger.instructionSteps.connectLedger', 'Connect your Ledger device to the computer')}
+              {t(
+                'ledger.instructionSteps.connectUsbLedger',
+                'Connect your USB Ledger device to the computer',
+              )}
             </li>
             <li>{t('ledger.instructionSteps.closeLedgerLive', 'Close Ledger Live app on the computer')}</li>
             <li>{t('ledger.instructionSteps.openOasisApp', 'Open the Oasis App on your Ledger device')}</li>
